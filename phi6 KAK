@@ -34,7 +34,7 @@ for n = 2:length(time)-1
    phi(k,n+1) = 2*phi(k,n)-phi(k,n-1)+dt^2*( phi(k+1,n)-2*phi(k,n)+phi(k-1,n))/dx^2;
    - phi(k,n).*(1 - (phi(k,n)).^2).*(1 - 3*(phi(k,n)).^2);
    phi(1, n+1) = 0;
-   phi(N, n+1) = 0;
+   phi(N, n+1) = 1;
 end
 
 close all;
