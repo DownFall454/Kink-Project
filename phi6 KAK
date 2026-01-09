@@ -1,0 +1,70 @@
+% Number of gridpoints and domain size
+N = 400; L = 50;
+% position of kink
+a=5;
+
+
+% Spatial grid and grid spacing
+x = linspace(-L,L,N);
+dx = x(2)-x(1);
+
+v=0.8;
+g = 1/sqrt((1-v^2));
+s = 1/sqrt(2);
+% Initial condition
+p0 = 1./sqrt(1+exp((x+a)*-sqrt(2))) - 1./sqrt(1+exp((x-a)*-sqrt(2)));
+
+
+% Initialize the spatial parameters for simulation
+T = 15; dt = 0.001; time = 0:dt:T;
+
+% Preallocate the solution array
+phi = zeros(N, length(time));
+p1 = 1./sqrt(1+exp(g*(x+a -v*dt)*-sqrt(2))) - 1./sqrt(1+exp(g*(x- a+v*dt)*-sqrt(2)));
+
+
+phi(:, 1) = p0;
+phi(:, 2) = p1; % Set initial condition
+
+
+% Time-stepping loop for the simulation
+for n = 2:length(time)-1
+    % Update the solution using a numerical scheme (e.g., explicit Euler method
+   k = 2:N-1;
+   phi(k,n+1) = 2*phi(k,n)-phi(k,n-1)+dt^2*( phi(k+1,n)-2*phi(k,n)+phi(k-1,n))/dx^2;
+   - phi(k,n).*(1 - (phi(k,n)).^2).*(1 - 3*(phi(k,n)).^2);
+   phi(1, n+1) = 0;
+   phi(N, n+1) = 0;
+end
+
+close all;
+
+ figure;
+ vid = VideoWriter('C:\Users\night\Onedrive\Documents\Random\phi6KinkAntikink.mp4', 'MPEG-4');
+ vid.FrameRate = 30;
+ open(vid)
+ saveToGif(x,phi,vid,[-L,L,-300,300],150,v,g,T)
+
+figure;
+plot(time,phi(N/2,:))
+xlabel('Time')
+ylabel('\phi at x=0')
+grid on;
+
+ function saveToGif(x,phi,vid,axs,frames,v,g,T)
+     plt = plot(x,phi(:,1),'LineWidth',2);
+     axis(axs)
+     xlabel('x');
+     ylabel('\phi');
+     title('phi-6 Kink-Antikink Dynamics', 'FontSize', 14);
+     for i = 1:frames        
+         axis(axs)
+         plt.YData = phi(:,round(i*size(phi,2)/frames)); % Update plot data for the current frame
+         frame= getframe(gcf);
+         writeVideo(vid, frame);
+         drawnow; % Update the figure window
+     end
+ end
+ 
+ close(vid);
+ 
